@@ -1,15 +1,18 @@
-import requests
 import json
-from telegram import *
-from telegram.ext import *
+import requests
+from telegram import Bot
+from telegram.ext import ApplicationBuilder, Updater, CommandHandler, MessageHandler
+import telegram.ext.filters as Filters
 from datetime import datetime
 from itertools import islice
+import asyncio
+
 # import logging
 
 # logging.basicConfig(level=logging.ERROR,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # Telegram bot token
 token='5409758372:AAGCPq3_S0oCLIwS8oCVME5DBJ7ThZCIH68'
-bot = Bot(token)
+# bot = Bot(token)
 
 
 def sample_responses(input_text):
@@ -34,19 +37,26 @@ def error(update, context):
     print(f"Update {update} caused error {context.error}")
 
 
-def main():
-    updater = Updater(token, use_context=True)
-    dp = updater.dispatcher
+async def main():
+    # async with ApplicationBuilder().token(token).build() as app:
+    # updater = Updater(token, update_queue=Queue())
+    try:
+        app = ApplicationBuilder().token(token).build()
+        await app.initialize()
 
-    dp.add_handler(CommandHandler("start", start_command))
-    dp.add_handler(CommandHandler("help", help_command))
+        app.add_handler(CommandHandler("start", start_command))
+        app.add_handler(CommandHandler("help", help_command))
 
-    dp.add_handler(MessageHandler(Filters.text, handle_message))
+        app.add_handler(MessageHandler(Filters.Text, handle_message))
 
-    dp.add_error_handler(error)
+        app.add_error_handler(error)
 
-    updater.start_polling()
-    updater.idle()
+        # updater.start_polling()
+        # updater.idle()
+        await app.run_polling()
+        await app.start()
+    finally:
+        await app.shutdown()
 
 def details(address):
     API_KEY = "D3XPR53MHTF8YI3W71YHI923V9MC4HW4XM"
@@ -76,4 +86,5 @@ def details(address):
     return all_details
 if __name__ == '__main__':
     print("Bot started...")
-    main()
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main())
