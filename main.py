@@ -4,12 +4,13 @@ from telegram import *
 from telegram.ext import *
 from datetime import datetime
 from itertools import islice
+# import logging
 
+# logging.basicConfig(level=logging.ERROR,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # Telegram bot token
 token='5409758372:AAGCPq3_S0oCLIwS8oCVME5DBJ7ThZCIH68'
 bot = Bot(token)
 
-print("Bot started...")
 
 def sample_responses(input_text):
     address = str(input_text).lower()
@@ -73,5 +74,6 @@ def details(address):
     # Send message to Telegram user
     # bot.send_message(chat_id=chat_id, text=all_details)
     return all_details
-
-main()
+if __name__ == '__main__':
+    print("Bot started...")
+    main()
